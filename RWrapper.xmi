@@ -43,7 +43,7 @@
       <status abstract="false" inherited="false" concrete="true" concreteHere="true"/>
       <excludedStates>RUNNING</excludedStates>
     </commands>
-    <attributes name="result" attType="Scalar" rwType="READ_WRITE" displayLevel="OPERATOR" polledPeriod="0" maxX="" maxY="" allocReadMember="true" isDynamic="false">
+    <attributes name="result" attType="Scalar" rwType="READ" displayLevel="OPERATOR" polledPeriod="0" maxX="" maxY="" allocReadMember="true" isDynamic="false">
       <dataType xsi:type="pogoDsl:StringType"/>
       <changeEvent fire="false" libCheckCriteria="false"/>
       <archiveEvent fire="false" libCheckCriteria="false"/>

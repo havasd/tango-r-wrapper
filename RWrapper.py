@@ -50,7 +50,7 @@ import PyTango
 import sys
 # Add additional import
 #----- PROTECTED REGION ID(RWrapper.additionnal_import) ENABLED START -----#
-
+import rpy2.robjects as ro
 #----- PROTECTED REGION END -----#	//	RWrapper.additionnal_import
 
 ## Device States Description
@@ -69,13 +69,12 @@ class RWrapper (PyTango.Device_4Impl):
         self.debug_stream("In __init__()")
         RWrapper.init_device(self)
         #----- PROTECTED REGION ID(RWrapper.__init__) ENABLED START -----#
-        
         #----- PROTECTED REGION END -----#	//	RWrapper.__init__
         
     def delete_device(self):
         self.debug_stream("In delete_device()")
         #----- PROTECTED REGION ID(RWrapper.delete_device) ENABLED START -----#
-        
+
         #----- PROTECTED REGION END -----#	//	RWrapper.delete_device
 
     def init_device(self):
@@ -83,7 +82,7 @@ class RWrapper (PyTango.Device_4Impl):
         self.get_device_properties(self.get_device_class())
         self.attr_result_read = ''
         #----- PROTECTED REGION ID(RWrapper.init_device) ENABLED START -----#
-        
+        self.set_state(PyTango.DevState.STANDBY)
         #----- PROTECTED REGION END -----#	//	RWrapper.init_device
 
     def always_executed_hook(self):
@@ -102,13 +101,6 @@ class RWrapper (PyTango.Device_4Impl):
         attr.set_value(self.attr_result_read)
         
         #----- PROTECTED REGION END -----#	//	RWrapper.result_read
-        
-    def write_result(self, attr):
-        self.debug_stream("In write_result()")
-        data=attr.get_write_value()
-        #----- PROTECTED REGION ID(RWrapper.result_write) ENABLED START -----#
-        
-        #----- PROTECTED REGION END -----#	//	RWrapper.result_write
         
     
     
@@ -136,7 +128,14 @@ class RWrapper (PyTango.Device_4Impl):
         :rtype: PyTango.DevVoid """
         self.debug_stream("In runCommand()")
         #----- PROTECTED REGION ID(RWrapper.runCommand) ENABLED START -----#
-        
+        self.set_state(PyTango.DevState.RUNNING)
+        try:
+            rRes = ro.r(argin)
+        except Exception,e:
+            rRes = str(e)
+
+        self.attr_result_read = str(rRes)
+        self.set_state(PyTango.DevState.STANDBY)
         #----- PROTECTED REGION END -----#	//	RWrapper.runCommand
         
     def is_runCommand_allowed(self):
@@ -157,7 +156,7 @@ class RWrapper (PyTango.Device_4Impl):
         self.debug_stream("In getResult()")
         argout = ''
         #----- PROTECTED REGION ID(RWrapper.getResult) ENABLED START -----#
-        
+        argout = self.attr_result_read
         #----- PROTECTED REGION END -----#	//	RWrapper.getResult
         return argout
         
@@ -221,7 +220,7 @@ class RWrapperClass(PyTango.DeviceClass):
         'result':
             [[PyTango.DevString,
             PyTango.SCALAR,
-            PyTango.READ_WRITE]],
+            PyTango.READ]],
         }
 
 
